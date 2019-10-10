@@ -123,8 +123,6 @@ class acme::request::handler(
           "http_proxy=${$letsencrypt_proxy}",
           "https_proxy=${$letsencrypt_proxy}"
         ]
-      } else {
-        $proxy_environment = []
       }
 
       # Run acme.sh to register the account.
