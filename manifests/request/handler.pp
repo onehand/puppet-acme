@@ -76,15 +76,6 @@ class acme::request::handler(
         $staging_or_not = ''
       }
 
-      if $letsencrypt_proxy {
-        $proxy_environment = [
-          "http_proxy=${$letsencrypt_proxy}",
-          "https_proxy=${$letsencrypt_proxy}"
-        ]
-      } else {
-        $proxy_environment = []
-      }
-
       $le_create_command = join([
         $acmecmd,
         $staging_or_not,
@@ -101,14 +92,13 @@ class acme::request::handler(
 
       # Run acme.sh to create the account key.
       exec { "create-account-${le_env}-${account_email}" :
-        user        => $user,
-        cwd         => $base_dir,
-        group       => $group,
-        path        => $path,
-        command     => $le_create_command,
-        environment => $proxy_environment,
-        creates     => $account_created_file,
-        require     => [
+        user    => $user,
+        cwd     => $base_dir,
+        group   => $group,
+        path    => $path,
+        command => $le_create_command,
+        creates => $account_created_file,
+        require => [
           User[$user],
           Group[$group],
           File[$account_conf_file],
@@ -128,15 +118,25 @@ class acme::request::handler(
         "/usr/bin/touch ${account_registered_file}",
       ], ' ')
 
+      if $letsencrypt_proxy {
+        $proxy_environment = [
+          "http_proxy=${$letsencrypt_proxy}",
+          "https_proxy=${$letsencrypt_proxy}"
+        ]
+      } else {
+        $proxy_environment = []
+      }
+
       # Run acme.sh to register the account.
       exec { "register-account-${le_env}-${account_email}" :
-        user    => $user,
-        cwd     => $base_dir,
-        group   => $group,
-        path    => $path,
-        command => $le_register_command,
-        creates => $account_registered_file,
-        require => [
+        user        => $user,
+        cwd         => $base_dir,
+        group       => $group,
+        path        => $path,
+        command     => $le_register_command,
+        environment => $proxy_environment,
+        creates     => $account_registered_file,
+        require     => [
           User[$user],
           Group[$group],
           File[$account_conf_file],
