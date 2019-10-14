@@ -78,6 +78,7 @@ define acme::certificate (
     ocsp_must_staple => $ocsp_must_staple,
     renew_days       => $renew_days,
     letsencrypt_ca   => $letsencrypt_ca,
+    http_proxy       => $http_proxy,
   }
 
 }

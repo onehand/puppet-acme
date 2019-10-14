@@ -69,6 +69,7 @@ class acme (
   $dh_param_size     = $::acme::params::dh_param_size,
   $ocsp_must_staple  = $::acme::params::ocsp_must_staple,
   $manage_packages   = $::acme::params::manage_packages,
+  $http_proxy         = undef,
 ) inherits ::acme::params {
 
   require ::acme::setup::common
@@ -99,6 +100,7 @@ class acme (
         profiles          => $profiles,
         letsencrypt_proxy => $letsencrypt_proxy,
         require           => Class[::acme::setup::puppetmaster],
+        http_proxy        => $http_proxy,
       }
     }
     # Collect certificates.
@@ -116,6 +118,7 @@ class acme (
       acme_host        => $acme_host,
       dh_param_size    => $dh_param_size,
       ocsp_must_staple => $ocsp_must_staple,
+      http_proxy       => $http_proxy,
     },$config)
     # Create the certificate resource.
     ::acme::certificate { $domain: * => $options }

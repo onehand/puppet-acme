@@ -27,7 +27,8 @@ class acme::request::handler(
   $acct_dir         = $::acme::params::acct_dir,
   $cfg_dir          = $::acme::params::cfg_dir,
   $path             = $::acme::params::path,
-  $ocsp_request     = $::acme::params::ocsp_request
+  $ocsp_request     = $::acme::params::ocsp_request,
+  $http_proxy,
 ) inherits ::acme::params {
 
   File {
@@ -118,10 +119,10 @@ class acme::request::handler(
         "/usr/bin/touch ${account_registered_file}",
       ], ' ')
 
-      if $letsencrypt_proxy {
+      if $http_proxy {
         $proxy_environment = [
-          "http_proxy=${$letsencrypt_proxy}",
-          "https_proxy=${$letsencrypt_proxy}"
+          "http_proxy=${http_proxy}",
+          "https_proxy=${http_proxy}"
         ]
       }
 

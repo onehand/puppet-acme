@@ -29,6 +29,7 @@ define acme::request (
   $domain           = $name,
   $altnames         = undef,
   $ocsp_must_staple = true,
+  $http_proxy       = undef,
 ) {
   require ::acme::params
 
@@ -113,9 +114,20 @@ define acme::request (
       }
     }
   }
+
   # Merge those pre-defined hook options with user-defined hook options.
   # NOTE: We intentionally use Hashes so that *values* can be overriden.
-  $_hook_params = deep_merge($_hook_params_pre, $profile['env'])
+  $_hook_params_env = deep_merge($_hook_params_pre, $profile['env'])
+
+  if $http_proxy {
+    $_proxy_environment = {
+      'http_proxy'  => "${http_proxy}",
+      'https_proxy' => "${http_proxy}"
+    }
+  }
+
+  $_hook_params = deep_merge($_proxy_environment, $_hook_params_env)
+
   # Convert the Hash to an Array, required for Exec's "environment" attribute.
   $hook_params = $_hook_params.map |$key,$value| { "${key}=${value}" }
   notify { "hook params for domain ${domain}: ${hook_params}": loglevel => debug }

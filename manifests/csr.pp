@@ -35,6 +35,7 @@ define acme::csr(
   $force            = true,
   $dh_param_size    = 2048,
   $ocsp_must_staple = true,
+  $http_proxy       = undef,
 ) {
   require ::acme::params
 
@@ -198,6 +199,7 @@ define acme::csr(
       renew_days       => $renew_days,
       letsencrypt_ca   => $letsencrypt_ca,
       ocsp_must_staple => $ocsp_must_staple,
+      http_proxy       => $http_proxy,
     }
   } else {
     notify { "no CSR from facter for domain ${domain} (normal on first run)" : }
