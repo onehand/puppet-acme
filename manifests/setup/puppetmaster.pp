@@ -4,6 +4,7 @@
 #
 class acme::setup::puppetmaster (
   $manage_packages  = $::acme::params::manage_packages,
+  $acme_git_url     = $::acme::params::acme_git_url,
   $acme_install_dir = $::acme::params::acme_install_dir,
   $csr_dir          = $::acme::params::csr_dir,
   $log_dir          = $::acme::params::log_dir,

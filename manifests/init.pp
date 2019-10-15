@@ -77,6 +77,7 @@ class acme (
   if ($::fqdn == $acme_host) {
     class { '::acme::setup::puppetmaster' :
       manage_packages => $manage_packages,
+      acme_git_url    => $acme_git_url,
     }
 
     # Validate configuration of $acme_host.
