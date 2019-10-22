@@ -32,6 +32,7 @@ define acme::deploy::crt(
   $ocsp = "${crt_dir}/${name}/cert.ocsp"
   $key = "${key_dir}/${name}/private.key"
   $dh = "${cfg_dir}/${name}/params.dh"
+
   $crt_chain = "${crt_dir}/${name}/chain.pem"
   $crt_full_chain = "${crt_dir}/${name}/fullchain.pem"
   $crt_full_chain_with_key = "${key_dir}/${name}/fullchain_with_key.pem"

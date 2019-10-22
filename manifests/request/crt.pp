@@ -37,6 +37,7 @@ define acme::request::crt(
       crt_chain_content => $chain,
       ocsp_content      => $ocsp,
       tag               => $::fqdn,
+      domain            => $domain,
     }
   }
 }

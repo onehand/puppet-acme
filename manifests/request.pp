@@ -35,7 +35,7 @@ define acme::request (
   $user = $::acme::params::user
   $group = $::acme::params::group
   $base_dir = $::acme::params::base_dir
-  $acme_dir = $::acme::params::acme_dir
+  $acme_dir = "${::acme::params::acme_dir}/${name}"
   $cfg_dir = $::acme::params::cfg_dir
   $crt_dir = $::acme::params::crt_dir
   $csr_dir = $::acme::params::csr_dir
@@ -99,6 +99,7 @@ define acme::request (
     $_ocsp = ''
   }
 
+
   # Collect options for "supported" hooks.
   if ($challengetype == 'dns-01') {
     # DNS-01 / nsupdate hook
@@ -109,10 +110,14 @@ define acme::request (
       if ($nsupdate_id and $nsupdate_key and $nsupdate_type) {
         $hook_dir = "${cfg_dir}/profile_${use_profile}"
         $hook_conf_file = "${hook_dir}/hook.cnf"
-        $_hook_params_pre = { 'NSUPDATE_KEY' => $hook_conf_file }
+        $_hook_params_pre_pre = { 'NSUPDATE_KEY' => $hook_conf_file }
       }
     }
   }
+
+  $_hook_params_pre = deep_merge($_hook_params_pre_pre, { 'DOMAIN_PATH' => $acme_dir })
+
+
   # Merge those pre-defined hook options with user-defined hook options.
   # NOTE: We intentionally use Hashes so that *values* can be overriden.
   $_hook_params = deep_merge($_hook_params_pre, $profile['env'])
@@ -165,9 +170,9 @@ define acme::request (
   }
 
   # Places where acme.sh stores the resulting certificate.
-  $le_crt_file = "${acme_dir}/${name}/${domain}.cer"
-  $le_chain_file = "${acme_dir}/${name}/ca.cer"
-  $le_fullchain_file = "${acme_dir}/${name}/fullchain.cer"
+  $le_crt_file = "${acme_dir}/${domain}.cer"
+  $le_chain_file = "${acme_dir}/ca.cer"
+  $le_fullchain_file = "${acme_dir}/fullchain.cer"
 
   # We create a copy of the resulting certificates in a separate folder
   # to make it easier to collect them with facter.
@@ -243,7 +248,7 @@ define acme::request (
     "--days ${renew_days}",
     "--log ${acmelog}",
     '--log-level 2',
-    "--home ${llacme_dir}",
+    "--home ${acme_dir}",
     '--keylength 4096',
     "--accountconf ${account_conf_file}",
     $_ocsp,
