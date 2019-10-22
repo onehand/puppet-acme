@@ -54,6 +54,8 @@ define acme::csr(
   $user = $::acme::params::user
   $group = $::acme::params::group
 
+
+
   $base_dir = $::acme::params::base_dir
   $cfg_dir = $::acme::params::cfg_dir
   $key_dir = $::acme::params::key_dir
@@ -72,7 +74,9 @@ define acme::csr(
     $subject_alt_names = []
   }
 
-  file { "${cfg_dir}/${domain}":
+  $request_name = "${::fqdn}-${domain}"
+
+  file { "${cfg_dir}/${request_name}":
     ensure  => directory,
     owner   => $user,
     group   => $group,
@@ -80,7 +84,7 @@ define acme::csr(
     require => Group[$group],
   }
 
-  file { "${key_dir}/${domain}":
+  file { "${key_dir}/${request_name}":
     ensure  => directory,
     owner   => $user,
     group   => $group,
@@ -88,7 +92,7 @@ define acme::csr(
     require => Group[$group],
   }
 
-  file { "${crt_dir}/${domain}":
+  file { "${crt_dir}/${request_name}":
     ensure  => directory,
     owner   => $user,
     group   => $group,
@@ -96,11 +100,11 @@ define acme::csr(
     require => Group[$group],
   }
 
-  $cnf_file = "${cfg_dir}/${domain}/ssl.cnf"
-  $dh_file  = "${cfg_dir}/${domain}/params.dh"
-  $key_file = "${key_dir}/${domain}/private.key"
-  $csr_file = "${crt_dir}/${domain}/cert.csr"
-  $crt_file = "${crt_dir}/${domain}/cert.pem"
+  $cnf_file = "${cfg_dir}/${request_name}/ssl.cnf"
+  $dh_file  = "${cfg_dir}/${request_name}/params.dh"
+  $key_file = "${key_dir}/${request_name}/private.key"
+  $csr_file = "${crt_dir}/${request_name}/cert.csr"
+  $crt_file = "${crt_dir}/${request_name}/cert.pem"
 
   $create_dh_unless = join([
     '/usr/bin/test',
@@ -186,13 +190,13 @@ define acme::csr(
     require => X509_request[$csr_file],
   }
 
-  $request_name = "${facts['fqdn']}-${domain}"
 
-  $domain_rep = regsubst(regsubst($domain, '\.', '_', 'G'),'-', '_', 'G')
+
+  $domain_rep = regsubst(regsubst($request_name, '\.', '_', 'G'),'-', '_', 'G')
   $csr_content = pick_default(getvar("::acme_csr_${domain_rep}"), '')
   if ($csr_content =~ /CERTIFICATE REQUEST/) {
     @@acme::request { $request_name:
-      domain           => $domain
+      domain           => $domain,
       csr              => $csr_content,
       tag              => $acme_host,
       altnames         => $altnames,

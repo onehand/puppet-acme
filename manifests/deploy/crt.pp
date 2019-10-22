@@ -1,4 +1,4 @@
-# = Define: acme::crt
+  # = Define: acme::crt
 #
 # Used as exported ressource to ship a signed CRT.
 #
@@ -28,13 +28,13 @@ define acme::deploy::crt(
   $user = $::acme::params::user
   $group = $::acme::params::group
 
-  $crt = "${crt_dir}/${domain}/cert.pem"
-  $ocsp = "${crt_dir}/${domain}/cert.ocsp"
-  $key = "${key_dir}/${domain}/private.key"
-  $dh = "${cfg_dir}/${domain}/params.dh"
-  $crt_chain = "${crt_dir}/${domain}/chain.pem"
-  $crt_full_chain = "${crt_dir}/${domain}/fullchain.pem"
-  $crt_full_chain_with_key = "${key_dir}/${domain}/fullchain_with_key.pem"
+  $crt = "${crt_dir}/${name}/cert.pem"
+  $ocsp = "${crt_dir}/${name}/cert.ocsp"
+  $key = "${key_dir}/${name}/private.key"
+  $dh = "${cfg_dir}/${name}/params.dh"
+  $crt_chain = "${crt_dir}/${name}/chain.pem"
+  $crt_full_chain = "${crt_dir}/${name}/fullchain.pem"
+  $crt_full_chain_with_key = "${key_dir}/${name}/fullchain_with_key.pem"
 
   file { $crt:
     ensure  => file,
