@@ -31,11 +31,12 @@ define acme::request::crt(
   notify { "chain for ${domain} from ${le_chain_file} contents: ${chain}": loglevel => debug }
 
   if ($crt =~ /BEGIN CERTIFICATE/) {
-    @@acme::deploy::crt { $domain:
+    @@acme::deploy::crt { $name:
       crt_content       => "$crt\n",
       crt_chain_content => $chain,
       ocsp_content      => $ocsp,
       tag               => $::fqdn,
+      domain            => $domain,
     }
   }
 }
