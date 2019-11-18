@@ -189,7 +189,7 @@ define acme::csr(
   $domain_rep = regsubst(regsubst($domain, '\.', '_', 'G'),'-', '_', 'G')
   $csr_content = pick_default(getvar("::acme_csr_${domain_rep}"), '')
   if ($csr_content =~ /CERTIFICATE REQUEST/) {
-    @@acme::request { "$::fqdn:$domain":
+    @@acme::request { "${::fqdn}_${domain}":
       domain           => $domain,
       csr              => $csr_content,
       tag              => $acme_host,
